@@ -58,11 +58,11 @@ test("the free semantic judge accepts a plausible off-board answer at the lowest
       return new Response(JSON.stringify({ choices: [{ message: { content: '{"related":true,"reason":"A weather vane can be on a rooftop."}' } }] }), { status: 200 });
     };
     const result = await judgeAnswer(prompt, "weather vane");
-    assert.equal(requestBody.model, "openrouter/free");
+    assert.equal(requestBody.model, "google/gemma-3-4b-it:free");
     assert.deepEqual(requestBody.response_format, { type: "json_object" });
     assert.equal(requestBody.max_completion_tokens, 300);
     assert.deepEqual(JSON.parse(requestBody.messages[1].content), { prompt: prompt.text, category: prompt.cat, answer: "weather vane" });
-    assert.equal(answerJudgeModel(), "openrouter/free");
+    assert.equal(answerJudgeModel(), "google/gemma-3-4b-it:free");
     assert.equal(result.accepted, true);
     assert.equal(result.checkedBy, "ai");
     assert.equal(result.tier, "grounded");
