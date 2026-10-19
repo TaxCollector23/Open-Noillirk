@@ -22,7 +22,24 @@ test("without an OpenRouter key, an unrelated answer is rejected with retry guid
     assert.equal(calls, 0);
     assert.equal(result.accepted, false);
     assert.equal(result.retryable, true);
-    assert.match(result.reason, /specific, on-topic/i);
+    assert.match(result.reason, /AI checker is temporarily unavailable/i);
+  } finally {
+    restoreEnv("OPENROUTER_API_KEY", oldKey);
+    globalThis.fetch = oldFetch;
+  }
+});
+
+test("a rate-limited AI judge rejects unknown answers with a clear retry message", async () => {
+  const oldKey = process.env.OPENROUTER_API_KEY;
+  const oldFetch = globalThis.fetch;
+  try {
+    process.env.OPENROUTER_API_KEY = "test-only-key";
+    globalThis.fetch = async () => new Response(JSON.stringify({ error: { message: "Rate limited" } }), { status: 429 });
+    const result = await judgeAnswer(prompt, "molecular spectroscopy");
+    assert.equal(result.accepted, false);
+    assert.equal(result.retryable, true);
+    assert.equal(result.checkedBy, "local");
+    assert.match(result.reason, /AI checker is rate-limited/i);
   } finally {
     restoreEnv("OPENROUTER_API_KEY", oldKey);
     globalThis.fetch = oldFetch;
