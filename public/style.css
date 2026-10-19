@@ -219,10 +219,10 @@ body[data-phase="done"] .mascot{z-index:15}
 
 /* Open Noillirk: clear mode selection, upward scoring, and same-screen party cues. */
 .hero-word,.tagline,.subline,.open-label,.landing .eyebrow,.landing h2,.landing #land-points,.landing #land-quip{ text-shadow:none!important; }
-.hero-word{color:#08283d!important;}
-.tagline{color:#006780;}
-.subline{color:#17334e;}
-.open-label{color:#075c71;}
+.hero-word{color:#000!important;}
+.tagline{color:#000;}
+.subline{color:#000;}
+.open-label{color:#000;}
 .noillirk-mode-picker{border:0;padding:0;margin:10px 0 0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;background:none;}
 .noillirk-mode-picker legend{width:100%;padding:0 0 4px;text-align:center;color:var(--muted);font-size:13px;letter-spacing:.2em;}
 .noillirk-mode-picker .mode-button{min-width:112px;padding:10px 14px;border:1px solid #35506c;background:#0a1728;color:#d9e9f8;letter-spacing:.08em;font-size:14px;transition:background .15s,border-color .15s,color .15s,transform .15s;}

@@ -116,7 +116,7 @@ function showLanding(result,oldScore=currentScore-result.score){
   $('land-quip').textContent=result.quip||tier?.blurb||(result.rawAnswer?'That entry was not accepted. Try a more direct answer next time.':'The clock ran out before an answer was entered.');$('next-btn').textContent=game.completed?'VIEW RESULTS ▲':'CLIMB HIGHER ▲';
   if(tier)sound.event(result.tier);scene.target=-currentScore*10;scene.roundIndex=game.round;
   if(!scene.fx)scene.fx={tier:result.tier,progress:1};
-  scene.moveCamera(-currentScore*10+30,testMode?1:500);
+  scene.moveCamera(-currentScore*10-30,testMode?1:500);
   const gold=result.tier==='skyhigh';visualScore=oldScore;
   if(gold){$('mascot').classList.remove('celebrate');void $('mascot').offsetWidth;$('mascot').classList.add('celebrate');setTimeout(()=>$('mascot').classList.remove('celebrate'),testMode?30:1250);scene.goldLandAt=performance.now();setTimeout(()=>{if(phase!=='landed'||game.results.at(-1)?.round!==result.round)return;syncBuddyGold();scene.burst('#ffd166',42);animateScore(oldScore,currentScore,true);},testMode?20:1000);}else animateScore(oldScore,currentScore);
   if(['jetstream','skyhigh'].includes(result.tier)){$('game').classList.add('shake');setTimeout(()=>$('game').classList.remove('shake'),500);}
