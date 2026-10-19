@@ -3,7 +3,13 @@ import { chooseLineup, dayNumber } from "@/lib/game";
 export const dynamic = "force-dynamic";
 
 function ticket(id) {
-  return `${id}.${Math.random().toString(36).slice(2, 14)}`;
+  return `${id}.${globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)}`;
+}
+
+function publicPrompt(prompt) {
+  if (!prompt) return null;
+  const { id, text, cat } = prompt;
+  return { id, text, cat };
 }
 
 export async function GET(request) {
@@ -26,7 +32,7 @@ function deal(mode, requestedDay, recent) {
   const lineup = chooseLineup({ mode, day, recent });
   const tickets = Object.fromEntries(lineup.map((prompt) => [prompt.id, ticket(prompt.id)]));
   if (mode === "endless") {
-    return Response.json({ prompt: lineup[0] ?? null, run: `run-${Date.now().toString(36)}`, ticket: tickets[lineup[0]?.id] ?? null });
+    return Response.json({ prompt: publicPrompt(lineup[0]), run: `run-${Date.now().toString(36)}`, ticket: tickets[lineup[0]?.id] ?? null });
   }
-  return Response.json({ day, number: dayNumber(day), prompts: lineup, tickets });
+  return Response.json({ day, number: dayNumber(day), prompts: lineup.map(publicPrompt), tickets });
 }

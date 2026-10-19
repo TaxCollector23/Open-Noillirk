@@ -1,15 +1,8 @@
 # Open Noillirk
 
-Open Noillirk is an independent, open-source survey-climb game. It is a clean-room reconstruction of the interaction model observed on [playdaily.org/noillirk](https://playdaily.org/noillirk): choose a climb, answer timed prompts, reveal a survey tier, and turn points into altitude.
+Open Noillirk is a free, independent survey-climb game. It pairs the MIT-licensed client interface and visual assets from [OpenKrillion](https://github.com/VulcanEon/openkrillion.com-service) with Noillirk-inspired rules and an independently maintained prompt/answer service. It is not affiliated with either reference game's operators.
 
-The project is intentionally self-contained:
-
-- Next.js App Router with small JSON API routes.
-- An original editable prompt/answer corpus in `lib/game-data.js`.
-- Deterministic local scoring with six visible tiers.
-- Daily, Classic, Endless, results, best-score storage, and a same-browser local room mode.
-- No paid AI provider or required API key.
-- Original CSS/pixel-inspired visuals; no assets copied from the reference site.
+The original Noillirk site was inspected with [REA](https://github.com/morluto/rea). The evidence supports the visible game loop and API shape, not the private implementation or the source survey data. This project therefore uses an editable prompt bank in `lib/game-data.js`, not copied Noillirk answers.
 
 ## Run locally
 
@@ -18,30 +11,43 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-Useful checks:
+Open [http://localhost:3000](http://localhost:3000). Checks:
 
 ```bash
 npm test
 npm run build
 ```
 
-## API surface
+## How it is built
+
+- `app/` is the Next.js App Router shell and Vercel API routes.
+- `public/app.mjs`, `public/ocean.mjs`, and the other browser modules power the adapted OpenKrillion interface and game scene.
+- `public/noillirk-adapter.mjs` translates the browser game contract into Noillirk API calls and stores in-progress runs locally.
+- `lib/game-data.js` owns prompt boards and rank-to-tier scoring; `lib/answer-judge.js` handles off-board answer relevance.
+- `docs/architecture.md` describes request flow, state ownership, limitations, and the evidence boundary.
+
+## API
 
 | Route | Purpose |
 | --- | --- |
-| `POST /api/noillirk/deal` | Returns a Classic/Daily lineup or the next Endless prompt. |
-| `POST /api/noillirk/answer` | Scores one answer against the open board. |
-| `GET /api/noillirk/answers?prompt=...` | Returns the public answer board for a prompt. |
-| `GET /api/health` | Deployment smoke check. |
+| `POST /api/noillirk/deal` | Deals a Daily, Classic, or Endless prompt set with per-prompt request markers. |
+| `POST /api/noillirk/answer` | Checks an answer against the board, then optionally judges off-board relevance. |
+| `GET /api/noillirk/answers?promptId=…&ticket=…` | Returns the dealt prompt's public answer board for review. |
+| `GET /api/health` | Deployment and optional AI-configuration check. |
 
-The shorter `/api/deal`, `/api/answer`, and `/api/answers` paths remain as local aliases.
+The shorter `/api/deal`, `/api/answer`, and `/api/answers` routes are compatibility aliases.
 
-## Scope note
+## Optional semantic answer review
 
-The original site has a durable multiplayer transport. Vercel Functions are stateless, so this repository ships a transparent same-browser pass-and-play room instead of claiming cross-device realtime without a storage/realtime provider. The adapter seam is documented in [docs/architecture.md](docs/architecture.md); adding a free realtime backend later does not require changing the scoring or UI contract.
+Without configuration, off-board answers use a conservative local relevance check: unrelated or unclear text is rejected with a retry prompt rather than automatically earning points. To allow semantic review of plausible off-board answers, set `OPENROUTER_API_KEY` in the Vercel project's server-side environment. The default model is `openrouter/free`; the key is never exposed to the browser. If the provider is unavailable, the local check is used. The game remains playable without a key. See `.env.example` for optional settings.
 
-## Attribution and investigation notes
+## Honest limitations
 
-The reference behavior was inspected from the public page and its shipped browser bundles using [REA](https://github.com/morluto/rea), an MIT-licensed reverse-engineering toolkit. The implementation here is new code and new visual styling. See the architecture document for observed behavior, evidence boundaries, and deliberate differences.
+- There are no accounts, database, analytics, or cross-device sync. Run progress, settings, and history live in the current browser's local storage.
+- Local Party is same-device pass-and-play, not online multiplayer. Vercel Functions are stateless; cross-device rooms need a realtime transport and shared persistence.
+- Only answer validation and board access run on the server. The timer and run continuity are client-owned, so this is not a competitive anti-cheat service.
+- The project does not ingest the reference site's survey dataset or sync with `krillion.io`.
+
+## License and attribution
+
+Open Noillirk's original code is MIT-licensed. Reused OpenKrillion source and assets remain under the upstream MIT license in `third_party/openkrillion/LICENSE`; the VT323 font has its bundled SIL Open Font License. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
