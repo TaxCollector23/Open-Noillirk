@@ -1,0 +1,18 @@
+{
+  "name": "open-noillirk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "An independent, open-source survey-climb game inspired by the observed Noillirk interaction model.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "next": "^16.4.2",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  }
+}
