@@ -59,6 +59,8 @@ test("the free semantic judge accepts a plausible off-board answer at the lowest
     };
     const result = await judgeAnswer(prompt, "weather vane");
     assert.equal(requestBody.model, "openrouter/free");
+    assert.deepEqual(requestBody.response_format, { type: "json_object" });
+    assert.equal(requestBody.max_completion_tokens, 120);
     assert.deepEqual(JSON.parse(requestBody.messages[1].content), { prompt: prompt.text, category: prompt.cat, answer: "weather vane" });
     assert.equal(answerJudgeModel(), "openrouter/free");
     assert.equal(result.accepted, true);
